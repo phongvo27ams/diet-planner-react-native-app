@@ -1,8 +1,12 @@
 import { Dimensions, Text, View, Image } from "react-native";
-import Colors from "./../shared/Colors";
-import Button from "./../components/shared/Button";
+import Colors from "../shared/Colors";
+import Button from "../components/shared/Button";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Index() {
+  const router = useRouter();
+
   return (
     <View
       style={{
@@ -58,7 +62,11 @@ export default function Index() {
         width: '100%',
         padding: 20
       }}>
-        <Button title={'Get Started'} onPress={() => console.log('Button clicked')} />
+        <Button
+          title={'Get Started'}
+          onPress={() => router.push('/auth/SignIn')}
+          icon={<Ionicons name="arrow-forward" size={24} color="white" />}
+        />
       </View>
     </View>
   );
