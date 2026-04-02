@@ -1,11 +1,34 @@
 import { Dimensions, Text, View, Image } from "react-native";
-import Colors from "../shared/Colors";
-import Button from "../components/shared/Button";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { onAuthStateChanged } from "firebase/auth";
+import { api } from "@/convex/_generated/api";
+import { useContext, useEffect } from "react";
+import { useConvex } from "convex/react";
+
+import { auth } from "../services/FirebaseConfig";
+import { UserContext } from "../context/UserContext";
+import Colors from "../shared/Colors";
+import Button from "../components/shared/Button";
 
 export default function Index() {
+  const convex = useConvex();
   const router = useRouter();
+
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (userInfo) => {
+      console.log(userInfo?.email);
+      const userData = await convex.query(api.Users.GetUser, {
+        email: userInfo?.email
+      });
+
+      console.log(userData);
+      setUser(userData);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View
