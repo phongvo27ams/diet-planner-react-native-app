@@ -15,7 +15,7 @@ export const CreateNewUser = mutation({
       const data = {
         name: args.name,
         email: args.email,
-        credits: 10
+        credit: 10
       }
 
       const result = await ctx.db.insert('users', {
@@ -39,5 +39,25 @@ export const GetUser = query({
       .collect();
 
     return user[0];
+  }
+})
+
+export const UpdateUserPreferences = mutation({
+  args: {
+    uid: v.id('users'),
+    weight: v.string(),
+    height: v.string(),
+    gender: v.string(),
+    goal: v.string()
+  },
+  handler: async(ctx, args) => {
+    const result = await ctx.db.patch(args.uid, {
+      height: args.height,
+      weight: args.weight,
+      gender: args.gender,
+      goal: args.goal
+    });
+    
+    return result;
   }
 })
