@@ -10,6 +10,8 @@ import { UserContext } from './../../context/UserContext';
 import Input from './../../components/shared/Input';
 import Button from './../../components/shared/Button';
 import Colors from './../../shared/Colors';
+import { CalculateCaloriesAI } from '../../services/AiModel';
+import Prompt from '../../shared/Prompt';
 
 export default function Preferences() {
   const router = useRouter();
@@ -29,21 +31,36 @@ export default function Preferences() {
       return;
     }
 
+    if (!user?._id) {
+      Alert.alert('Error', 'User not loaded');
+      return;
+    }
+
     const data = {
-      uid: user?._id,
+      uid: user._id,
       weight: weight,
       height: height,
       goal: goal,
       gender: gender
     }
 
+    // Calculate calories and proteins using AI
+    const PROMPT = JSON.stringify(data) + Prompt.CALORIES_PROMPT;
+    console.log(PROMPT);
+    const AIResult = await CalculateCaloriesAI(PROMPT);
+    const AIResponse = AIResult.choices[0].message.content;
+    const JSONContent = JSON.parse(AIResponse.replace('```json', '').replace('```', ''));
+    console.log(JSONContent);
+
     const result = await updateUserPreferences({
-      ...data
+      ...data,
+      ...JSONContent
     });
 
     setUser(prev => ({
       ...prev,
-      ...data
+      ...data,
+      ...JSONContent
     }));
 
     router.replace('/(tabs)/Home');

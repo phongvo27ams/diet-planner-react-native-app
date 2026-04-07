@@ -1,6 +1,7 @@
 import { View, Text, Image, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { useState, useContext } from 'react';
+import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/FirebaseConfig';
 import { useMutation } from 'convex/react';
@@ -19,6 +20,7 @@ export default function SignUp() {
   const createNewUser = useMutation(api.Users.CreateNewUser);
 
   const { user, setUser } = useContext(UserContext);
+  const router = useRouter();
 
   const onSignUp = () => {
     if (!name || !email || !password) {
@@ -40,6 +42,7 @@ export default function SignUp() {
 
           console.log(result);
           setUser(result);
+          router.replace('/(tabs)/Home');
         }
       })
       .catch((error) => {
