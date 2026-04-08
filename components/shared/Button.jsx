@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity } from 'react-native';
 import React from 'react';
-import Colors from '@/shared/Colors';
+import Colors from '../../shared/Colors';
 
 export default function Button({ title, onPress }) {
   return (
@@ -15,7 +15,7 @@ export default function Button({ title, onPress }) {
     >
       <Text style={{
         color: Colors.WHITE,
-        fontSize: 20,
+        fontSize: 18,
         textAlign: 'center',
       }}>
         {title}
