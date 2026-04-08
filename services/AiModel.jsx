@@ -6,12 +6,26 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
+const AIMODELNAME = "google/gemini-2.0-flash-lite-001";
+
 export const CalculateCaloriesAI = async (PROMPT) => await openai.chat.completions.create({
-  model: "google/gemini-2.0-flash-lite-001",
+  model: AIMODELNAME,
   messages: [
     {
       role: "user",
       content: PROMPT
     },
-  ]
+  ],
+  response_format: "json_object"
+});
+
+export const GenerateRecipeOptionsAI = async (PROMPT) => await openai.chat.completions.create({
+  model: AIMODELNAME,
+  messages: [
+    {
+      role: "user",
+      content: PROMPT
+    },
+  ],
+  response_format: "json_object"
 });
