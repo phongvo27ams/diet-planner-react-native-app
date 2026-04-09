@@ -11,7 +11,8 @@ export default function HomeHeader() {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10
+        gap: 10,
+        marginTop: 30
       }}
     >
       <Image

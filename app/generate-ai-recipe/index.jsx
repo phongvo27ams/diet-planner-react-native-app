@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import Colors from './../../shared/Colors';
 import Prompt from './../../shared/Prompt';
 import Button from './../../components/shared/Button';
-import { GenerateRecipeOptionsAI } from './../../services/AiModel';
+import { GenerateAIRecipe } from './../../services/AiModel';
 import RecipeOptionList from './../../components/RecipeOptionList';
 
-export default function GenerateAIRecipe() {
+export default function GenerateAiRecipe() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [recipeOption, setRecipeOption] = useState([]);
@@ -18,14 +18,14 @@ export default function GenerateAIRecipe() {
     try {
       // Make AI model call to generate recipe options
       const PROMPT = input + Prompt.GENERATE_RECIPE_OPTION_PROMPT;
-      const result = await GenerateRecipeOptionsAI(PROMPT);
-      console.log(result.choices[0].message);
+      const result = await GenerateAIRecipe(PROMPT);
+      // console.log(result.choices[0].message);
 
       const extractedJson = (result.choices[0].message.content).replace('```json', '').replace('```', '');
       const parsedJsonResponse = JSON.parse(extractedJson);
-      console.log(parsedJsonResponse);
+      // console.log(parsedJsonResponse);
       setRecipeOption(parsedJsonResponse);
-      console.log('recipeOption', recipeOption);
+      // console.log('recipeOption', recipeOption);
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -39,7 +39,8 @@ export default function GenerateAIRecipe() {
         paddingTop: Platform.OS == 'ios' ? 40 : 30,
         padding: 20,
         backgroundColor: Colors.WHITE,
-        height: '100%'
+        height: '100%',
+        marginTop: 20
       }}
     >
       <Text
