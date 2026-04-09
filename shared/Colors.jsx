@@ -4,5 +4,6 @@ export default {
   WHITE: '#FFFFFF',
   GRAY: '#808080',
   BLUE: '#4287F5',
+  GREEN: '#009E10',
   PINK: '#F542B3'
 }

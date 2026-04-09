@@ -17,4 +17,32 @@ export const CreateMealPlan = mutation({
     });
     return result;
   }
-})
+});
+
+export const GetTodaysMealPlan = query({
+  args: {
+    uid: v.id('users'),
+    date: v.string()
+  },
+  handler: async (ctx, args) => {
+    // Fetch all meal plans
+    const mealPlans = await ctx.db.query('mealPlan')
+      .filter(q =>
+        q.and(
+          q.eq(q.field('uid'), args.uid),
+          q.eq(q.field('date'), args.date)))
+      .collect();
+
+    // Fetch recipe belonging to meal plan
+    const results = await Promise.all(
+      mealPlans.map(async (mealPlan) => {
+        const recipe = await ctx.db.get(mealPlan.recipeId);
+        return {
+          mealPlan,
+          recipe
+        }
+      })
+    )
+    return results;
+  }
+});
