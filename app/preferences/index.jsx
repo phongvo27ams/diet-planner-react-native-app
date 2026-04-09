@@ -69,6 +69,7 @@ export default function Preferences() {
   return (
     <View style={{
       padding: 20,
+      marginTop: 20,
       height: '100%',
       backgroundColor: Colors.WHITE
     }}>
@@ -95,10 +96,10 @@ export default function Preferences() {
         gap: 10
       }}>
         <View style={{ flex: 1 }}>
-          <Input placeholder='e.g. 70' label='Weight (kg)' onChangeText={setWeight} />
+          <Input placeholder='e.g. 60' label='Weight (kg)' onChangeText={setWeight} />
         </View>
         <View style={{ flex: 1 }}>
-          <Input placeholder='e.g. 5.10' label='Height (ft)' onChangeText={setHeight} />
+          <Input placeholder='e.g. 170' label='Height (cm)' onChangeText={setHeight} />
         </View>
       </View>
 

@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { useMutation } from 'convex/react';
+import { useRouter } from 'expo-router';
 import { api } from './../convex/_generated/api';
 
 import Colors from '../shared/Colors';
@@ -15,6 +16,7 @@ export default function RecipeOptionList({ recipeOption }) {
 
   const CreateRecipe = useMutation(api.Recipes.CreateRecipe);
   const { user } = useContext(UserContext);
+  const router = useRouter();
 
   const onRecipeOptionSelect = async (recipe) => {
     setLoading(true);
@@ -42,6 +44,11 @@ export default function RecipeOptionList({ recipeOption }) {
       console.log("saveRecipeResult", saveRecipeResult);
 
       setLoading(false);
+
+      router.push({
+        pathname: '/recipe-detail',
+        recipeId: saveRecipeResult
+      })
     } catch (e) {
       setLoading(false);
     }
