@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.phongvo27ams.dietplannerreactnativeapp"
     },
     "web": {
       "output": "static",
@@ -38,11 +39,32 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "nutriplanner"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c7004feb-2a7e-4e9e-898e-1ab9651ded43"
+      }
+    },
+    "owner": "phongvo27ams",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c7004feb-2a7e-4e9e-898e-1ab9651ded43"
     }
   }
 }

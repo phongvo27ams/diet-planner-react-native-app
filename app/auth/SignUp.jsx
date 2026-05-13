@@ -1,9 +1,10 @@
 import { View, Text, Image, Alert } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState, useContext } from 'react';
-import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import * as Sentry from '@sentry/react-native';
 import { auth } from '../../services/FirebaseConfig';
+import { setSentryUserContext } from '../../services/SentryService';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
@@ -19,37 +20,48 @@ export default function SignUp() {
 
   const createNewUser = useMutation(api.Users.CreateNewUser);
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const router = useRouter();
 
-  const onSignUp = () => {
+  const onSignUp = async () => {
     if (!name || !email || !password) {
       Alert.alert('Missing fields!', 'Please fill all the fields');
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // Signed up
-        const user = userCredential.user;
-        console.log(user);
+    try {
+      const result = await Sentry.startSpan(
+        {
+          name: 'auth.sign_up',
+          op: 'auth.register',
+          attributes: {
+            screen: 'SignUp',
+            method: 'email_password',
+          },
+        },
+        async () => {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          Sentry.setTag('auth.firebase_uid', userCredential.user.uid);
 
-        if (user) {
-          const result = await createNewUser({
+          return createNewUser({
             name: name,
             email: email
           });
-
-          console.log(result);
-          setUser(result);
-          router.replace('/(tabs)/Home');
         }
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
+      );
+
+      setUser(result);
+      setSentryUserContext(result, 'sign_up');
+      router.replace('/(tabs)/Home');
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: {
+          feature: 'auth',
+          flow: 'sign_up',
+        },
       });
+      Alert.alert('Error signing up!', 'Please try again later');
+    }
   }
 
   return (
@@ -75,7 +87,7 @@ export default function SignUp() {
 
       <View style={{
         width: '100%',
-        marginTop: 20
+        marginTop: 12
       }}>
         <Input placeholder={'Full Name'} onChangeText={setName} />
         <Input placeholder={'Email'} onChangeText={setEmail} />
@@ -84,13 +96,13 @@ export default function SignUp() {
 
       <View style={{
         width: '100%',
-        marginTop: 15
+        marginTop: 10
       }}>
         <Button
           title={'Create Account'}
           onPress={() => onSignUp()}
           style={{
-            marginTop: 20
+            marginTop: 10
           }}
         />
 

@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, FlatList } from 'react-native';
 import React, { useContext, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { UserContext } from './../../context/UserContext';
@@ -13,21 +13,24 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user?.weight) {
+    if (user && !user?.weight) {
       router.replace('/preferences');
     }
-  }, [user]);
+  }, [router, user]);
 
   return (
-    <View
-      style={{
-        padding: 20
-      }}
+    <FlatList
+      data={[]}
+      renderItem={() => null}
+      ListHeaderComponent={
+        <View style={{ padding: 20 }}>
+          <HomeHeader />
+          <TodayProgress />
+          <GenerateRecipeCard />
+          <TodaysMealPlan />
+        </View>
+      }
     >
-      <HomeHeader />
-      <TodayProgress />
-      <GenerateRecipeCard />
-      <TodaysMealPlan />
-    </View>
+    </FlatList>
   )
 }

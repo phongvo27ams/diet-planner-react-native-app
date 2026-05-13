@@ -1,5 +1,5 @@
 import { Dimensions, Text, View, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { onAuthStateChanged } from "firebase/auth";
 import { api } from "@/convex/_generated/api";
@@ -7,37 +7,62 @@ import { useContext, useEffect } from "react";
 import { useConvex } from "convex/react";
 
 import { auth } from "../services/FirebaseConfig";
+import { setSentryUserContext } from "../services/SentryService";
 import { UserContext } from "../context/UserContext";
 import Colors from "../shared/Colors";
 import Button from "../components/shared/Button";
+import * as Sentry from "@sentry/react-native";
 
 export default function Index() {
   const convex = useConvex();
+  const pathname = usePathname();
   const router = useRouter();
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (userInfo) => {
-      console.log(userInfo?.email);
+      try {
+        if (!userInfo?.email) {
+          setSentryUserContext(null);
+          return;
+        }
 
-      if (!userInfo?.email) {
-        return;
-      }
+        Sentry.setTag("auth.firebase_uid", userInfo.uid);
 
-      const userData = await convex.query(api.Users.GetUser, {
-        email: userInfo?.email
-      });
+        const userData = await Sentry.startSpan(
+          {
+            name: "auth.bootstrap_user",
+            op: "auth.session",
+            attributes: {
+              screen: "index",
+              provider: userInfo.providerId,
+            },
+          },
+          () => convex.query(api.Users.GetUser, {
+            email: userInfo.email
+          })
+        );
 
-      console.log(userData);
-      
-      if (userData) {
-        setUser(userData);
-        router.replace('/(tabs)/Home');
+        if (userData) {
+          setUser(userData);
+          setSentryUserContext(userData, "session_restore");
+
+          if (pathname === "/" || pathname.startsWith("/auth")) {
+            router.replace('/(tabs)/Home');
+          }
+        }
+      } catch (error) {
+        Sentry.captureException(error, {
+          tags: {
+            feature: "auth",
+            flow: "session_restore",
+          },
+        });
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [convex, pathname, router, setUser]);
 
   return (
     <View

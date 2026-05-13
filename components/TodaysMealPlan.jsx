@@ -7,6 +7,7 @@ import { HugeiconsIcon } from '@hugeicons/react-native';
 import { CalendarAdd01Icon } from '@hugeicons/core-free-icons';
 
 import { UserContext } from '../context/UserContext';
+import { RefreshDataContext } from '../context/RefreshDataContext';
 import Colors from '../shared/Colors';
 import Button from './../components/shared/Button'
 import MealPlanCard from './MealPlanCard';
@@ -14,19 +15,20 @@ import MealPlanCard from './MealPlanCard';
 export default function TodaysMealPlan() {
   const [mealPlan, setMealPlan] = useState('');
 
-  const { user } = useContext(UserContext);
   const convex = useConvex();
 
+  const { user } = useContext(UserContext);
+  const { refreshData, setRefreshData } = useContext(RefreshDataContext);
+  
   useEffect(() => {
     user && getTodaysMealPlan();
-  }, [user])
+  }, [user, refreshData])
 
   const getTodaysMealPlan = async () => {
     const result = await convex.query(api.MealPlan.GetTodaysMealPlan, {
       date: moment().format('DD/MM/YYYY'),
       uid: user?._id
     });
-    console.log('--->', result);
     setMealPlan(result);
   }
 

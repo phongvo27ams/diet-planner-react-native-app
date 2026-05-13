@@ -3,29 +3,30 @@ import { View, Text, TextInput } from 'react-native';
 export default function Input({ placeholder, password = false, onChangeText, label = '' }) {
   return (
     <View style={{
-      marginTop: 15,
+      marginTop: 10,
       width: '100%'
     }}>
-      <Text style={{
-        fontWeight: 'medium',
-        fontSize: 18,
-        marginBottom: 10
-      }}>
-        {label}
-      </Text>
+      {label ? (
+        <Text style={{
+          fontWeight: '500',
+          fontSize: 16,
+          marginBottom: 6
+        }}>
+          {label}
+        </Text>
+      ) : null}
 
       <TextInput
         placeholder={placeholder}
         secureTextEntry={password}
         onChangeText={(value) => onChangeText(value)}
         style={{
-          padding: 15,
+          paddingHorizontal: 14,
           borderWidth: 1,
-          borderRadius: 10,
-          fontSize: 18,
-          paddingVertical: 20,
+          borderRadius: 8,
+          fontSize: 16,
+          paddingVertical: 14,
           width: '100%',
-          marginTop: 2
         }}
       />
     </View>
